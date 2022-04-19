@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# SQLite db file
+db.sqlite3
+
 # C extensions
 *.so
 .idea
@@ -100,4 +103,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+
 
