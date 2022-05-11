@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'article',
 ]
@@ -45,10 +46,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'MyBlog.urls'
@@ -123,20 +126,125 @@ DATEFMT = '%Y-%m-%d %H:%M:%S'
 
 STATIC_URL = '/static/'
 
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = ('http://10.89.228.206:28080',)
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    "Access-Control-Allow-Origin",
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'Pragma',
+    'Referer',
+    'X-Token',
+    'Accept',
+    'User-Agent',
+    'X-CSRFToken',
+    '*',
+)
+
+# log settings
+LOGS_DIR = '/home/workstation/bd/tmp/log/'
+os.system('mkdir -p {}'.format(LOGS_DIR))
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console':{
+#             'level':'DEBUG',
+#             'class':'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'propagate': True,
+#             'level':'DEBUG',
+#         },
+#     }
+# }
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {name} {filename}({funcName}:{lineno}) {levelname} -->: {message}',
+            'style': '{',
+            'level': 'INFO'
         },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+            'level': 'INFO'
+        }
     },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level':'DEBUG',
+
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
+        'mail_admins': {
+            'level': 'INFO',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'log_file_time': {
+            'filename': os.path.join(LOGS_DIR, 'sec.log'),
+            'level': 'INFO',
+            'formatter': 'verbose',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'encoding': 'utf8',
+            'when': 'D',
+            'backupCount': 15
+        },
+        'log_file_size': {
+            'filename': os.path.join(LOGS_DIR, 'sec.log'),
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'encoding': 'utf8',
+            'maxBytes': 16777216,  # 16MB
+            'backupCount': 15
+        }
+    },
+
+    'loggers': {
+        'prod': {
+            'handlers': ['console', 'log_file_time'] if os.getenv('DJANGO_DEBUG', None) else ['log_file_time'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        },
+        'dev': {
+            'handlers': ['console', 'log_file_size'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'propagate': True,
+        },
+
     }
 }
