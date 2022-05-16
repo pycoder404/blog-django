@@ -1,4 +1,4 @@
-class BaseException(Exception):
+class BasicException(Exception):
     def __init__(self, message='服务内部错误，请联系管理员.', code=1, status=200):
         self.message = message
         self.code = code

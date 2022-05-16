@@ -1,6 +1,7 @@
 import json
+import traceback
+
 from django.http import HttpResponse
-from utils.exceptions import BaseException
 
 from django.utils.deprecation import MiddlewareMixin
 
@@ -19,14 +20,13 @@ class UtilsExceptionMiddleware(MiddlewareMixin):
         :param exception:
         :return: None or HttpResponse object
         """
-
-        if not isinstance(exception, BaseException):
-            return None
+        msg = traceback.print_exc(exception)
         res = {
-            "message": exception.message,
-            "code": exception.code,
+            "detail": '系统产生了无法预知的错误，请联系管理员',
+            'error':msg,
         }
-        return HttpResponse(content=json.dumps(res), status=exception.status)
+        # todo  write error message in log file
+        return HttpResponse(content=json.dumps(res), status=500)
     #
     # def process_request(self, request):
     #     """

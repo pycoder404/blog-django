@@ -25,7 +25,6 @@ class ArticleList(BaseListAPIView):
     """
     model = Article
     serializer_class = ArticleSerializer
-
     def get_queryset_data(self):
         """
         从数据库获取数据，各个子类可以根据情况重写
@@ -33,6 +32,7 @@ class ArticleList(BaseListAPIView):
         """
         if self.model is not None:
             query_params = self.get_query_params()
+            # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/  prefetch_related
             queryset = self.model.objects.filter(**query_params).prefetch_related('author').order_by(*self.ordering)
             if not queryset:
                 logger.warning('Get empty data from db by query:{}'.format(self.request.get_full_path()))

@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'utils.middleware.UtilsExceptionMiddleware',
 
 ]
 
@@ -187,7 +188,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{asctime} {name} {filename}({funcName}:{lineno}) {levelname} -->: {message}',
+            'format': '{asctime} {name} {pathname} ({funcName}:{lineno}) {levelname} -->: {message}',
             'style': '{',
             'level': 'INFO'
         },
@@ -247,4 +248,9 @@ LOGGING = {
         },
 
     }
+}
+
+# rest framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'utils.pagination.UtilsPageNumberPagination',
 }

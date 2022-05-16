@@ -1,10 +1,16 @@
 import logging
-
+from collections import OrderedDict
+from django.http import HttpResponse
 from django.core.cache import cache
 from rest_framework.generics import GenericAPIView
 from rest_framework.generics import get_object_or_404
 from rest_framework import mixins
-from utils.exceptions import BaseException
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
+from rest_framework import exceptions, status
+
+
+from utils.exceptions import BasicException
 
 logger = logging.getLogger('prod.utils')
 
@@ -25,9 +31,8 @@ class BaseGenericAPIView(GenericAPIView):
     lookup_url_kwarg = None
 
     # fixme default_ordering 是否需要参考default_query_params更换为函数
-    default_ordering = ()
+    default_ordering = ('-id',)
     is_cache = False  # 如果设置了缓存，则子类必须重写get_cache_key方法，防止一些和请求用户有关的请求出现问题
-
 
     # todo filed alias 对于一些查询为了方便前端显示，需要在查询过程中对字段做别名
     def get_queryset(self):
@@ -137,14 +142,6 @@ class BaseGenericAPIView(GenericAPIView):
     def get_ordering(self):
         return self.default_ordering
 
-    def permission_denied(self, request, message=None):
-        """
-        If request is not permitted, determine what kind of exception to raise.
-        """
-        if request.authenticators and not request.successful_authenticator:
-            raise BaseException(status=403, message=message)
-        raise BaseException(status=401, message=message)
-
 
 class BaseCreateAPIView(mixins.CreateModelMixin,
                     BaseGenericAPIView):
@@ -161,8 +158,32 @@ class BaseListAPIView(mixins.ListModelMixin,
     """
     Concrete view for listing a queryset.
     """
+    is_page = True # 默认需要分页,防止数据过大
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # 默认需要分页,防止数据过大
+        if self.is_page:
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+        count = len(data)
+        # return HttpResponse('forbidden',status=403)
+        # 如果抛出drf的异常，drf是try...exception 处理的，可以返回响应
+        # 如果语法错误等异常，django core handler处理
+        return Response(OrderedDict([
+            ('count', count),
+            ('data', data)
+        ]))
 
 
 class BaseRetrieveAPIView(mixins.RetrieveModelMixin,
