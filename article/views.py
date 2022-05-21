@@ -1,5 +1,8 @@
 import logging
+from collections import OrderedDict
+import markdown
 from django.contrib.auth.models import User
+from rest_framework.response import Response
 
 from django.shortcuts import HttpResponse
 from article.models import Article
@@ -13,10 +16,6 @@ logger = logging.getLogger('dev')
 
 def index(request):
     return HttpResponse('article index page')
-
-
-def article_list(request):
-    return HttpResponse('article list page')
 
 
 class ArticleList(BaseListAPIView):
@@ -58,6 +57,36 @@ class ArticleList(BaseListAPIView):
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
     serializer_class = ArticleSerializer
+
+
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+
+        if self.request.GET.get('isedit', None):
+            return Response(OrderedDict([('code', 0), ('data', data), ('message', 'ok')]))
+        md = markdown.Markdown(
+            extensions=[
+                'markdown.extensions.extra',
+                'markdown.extensions.codehilite',
+                'markdown.extensions.toc',
+            ]
+        )
+
+        # print("--------------------------------------------")
+        md_content = md.convert(data['content'])
+        data['content'] = md_content
+        print(data['content'])
+        data['toc'] = md.toc
+        # print('---------------------------')
+        # print(md.toc)
+        # print('==========================')
+        # 新增了md.toc对象
+        # context = {'article': article, 'toc': md.toc}
+        return Response(data)
+
 
 
 class CreateArticle(BaseCreateAPIView):

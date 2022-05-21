@@ -25,7 +25,7 @@ SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*",'http://10.89.228.206:28080']
 
 
 # Application definition
@@ -119,7 +119,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-DATEFMT = '%Y-%m-%d %H:%M:%S'
+DATEFMT = '%Y-%m-%d'
+DATETIMEFMT = '%Y-%m-%d %H:%M:%S'
 
 
 # Static files (CSS, JavaScript, Images)
