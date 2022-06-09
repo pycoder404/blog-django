@@ -32,7 +32,9 @@ class ArticleList(BaseListAPIView):
         if self.model is not None:
             query_params = self.get_query_params()
             # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/  prefetch_related
-            queryset = self.model.objects.filter(**query_params).prefetch_related('author').order_by(*self.ordering)
+            # todo 这里两种方案的性能如何选择,如果使用当前这种不带prefetch的，那这个方法也没有必要重写，直接使用即可
+            # queryset = self.model.objects.filter(**query_params).prefetch_related('author','category','tags').order_by(*self.ordering)
+            queryset = self.model.objects.filter(**query_params).order_by(*self.ordering)
             if not queryset:
                 logger.warning('Get empty data from db by query:{}'.format(self.request.get_full_path()))
         else:
@@ -45,14 +47,6 @@ class ArticleList(BaseListAPIView):
             )
         return queryset
 
-    # def get_queryset(self):
-    #     # return Article.objects.all()
-    #     # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/
-    #     # https://docs.djangoproject.com/en/4.0/ref/models/querysets/
-    #     # 对于这种嵌套的多层的模型，如果使用正常的filter会导致在序列化过程中，每一条记录都去查询一次数据库，从后台执行的sql语句看
-    #     # 使用了prefetch_related会使用sql的 key in (values)来筛选出来所有关联的数据
-    #     return Article.objects.prefetch_related('author')
-
 
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
@@ -64,27 +58,19 @@ class ArticleDetail(BaseRetrieveAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
+        # 编辑模式下，将原始内容返回
+        if self.request.GET.get('isedit', None) == 'true':
+            return Response(data)
 
-        if self.request.GET.get('isedit', None):
-            return Response(OrderedDict([('code', 0), ('data', data), ('message', 'ok')]))
+        # fixme 'markdown.extensions.codehilite',好像没用？
         md = markdown.Markdown(
             extensions=[
                 'markdown.extensions.extra',
-                'markdown.extensions.codehilite',
                 'markdown.extensions.toc',
             ]
         )
-
-        # print("--------------------------------------------")
-        md_content = md.convert(data['content'])
-        data['content'] = md_content
-        print(data['content'])
+        data['content'] = md.convert(data['content'])
         data['toc'] = md.toc
-        # print('---------------------------')
-        # print(md.toc)
-        # print('==========================')
-        # 新增了md.toc对象
-        # context = {'article': article, 'toc': md.toc}
         return Response(data)
 
 
