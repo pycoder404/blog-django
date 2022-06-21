@@ -76,9 +76,10 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     author = DjangoUserSerializer(read_only=True)
-    author_id = serializers.IntegerField(write_only=True)
+    # author_id = serializers.IntegerField(write_only=True)
+
     # fixme 这里如果使用了格式后，就会导致创建过程中异常,传上的数据中是不包含这两个字段的
-    # 问题已经解决，使用read_only属性即可，在提供数据用于显示过程中可以显示，在update或者create阶段由model 的auto_now属性来完成更新
+    # fixme 问题已经解决，使用read_only属性即可，在提供数据用于显示过程中可以显示，在update或者create阶段由model的auto_now属性来完成更新
     created_time = serializers.DateTimeField(format=DATEFMT,read_only=True)
     last_modified_time = serializers.DateTimeField(format=DATEFMT,read_only=True)
 
@@ -134,3 +135,4 @@ class ArticleSerializer(serializers.ModelSerializer):
                     Tag.objects.create(text=text)
         data['category_id'] = data.get('category',None)
         return super().to_internal_value(data)
+

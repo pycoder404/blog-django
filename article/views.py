@@ -52,8 +52,6 @@ class ArticleDetail(BaseRetrieveAPIView):
     model = Article
     serializer_class = ArticleSerializer
 
-
-
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -74,7 +72,6 @@ class ArticleDetail(BaseRetrieveAPIView):
         return Response(data)
 
 
-
 class CreateArticle(BaseCreateAPIView):
     model = Article
     serializer_class = ArticleSerializer
@@ -82,7 +79,7 @@ class CreateArticle(BaseCreateAPIView):
     def perform_create(self, serializer):
         print("begin to save-->")
         # fixme  change to real author
-        serializer.save(author_id=2)
+        serializer.save(author_id=1)
 
 
 class UpdateArticle(BaseUpdateAPIView):
