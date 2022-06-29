@@ -75,7 +75,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    author = DjangoUserSerializer(read_only=True)
+    author = serializers.SlugRelatedField(read_only=True,slug_field='username')
     # author_id = serializers.IntegerField(write_only=True)
 
     # fixme 这里如果使用了格式后，就会导致创建过程中异常,传上的数据中是不包含这两个字段的
@@ -84,7 +84,16 @@ class ArticleSerializer(serializers.ModelSerializer):
     last_modified_time = serializers.DateTimeField(format=DATEFMT,read_only=True)
 
     # category 的嵌套序列化字段
-    category = CategorySerializer(read_only=True)
+    category =  serializers.PrimaryKeyRelatedField(read_only=True)
+    views_count =  serializers.IntegerField(read_only=True)
+    likes_count =  serializers.IntegerField(read_only=True)
+
+    # todo  如果使用SlugrelatedField，则反馈的是title字段（更合理），前端需要适配
+    # category = serializers.SlugRelatedField(
+    #     required=False,
+    #     slug_field='title',
+    #     read_only=True
+    # )
     # category 的 id 字段，用于创建/更新 category 外键
     category_id = serializers.IntegerField(write_only=True, allow_null=True, required=False)
     # tag 字段
@@ -97,8 +106,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         # fields = '__all__'
-        fields = ('id','author','author_id','title','content','created_time','last_modified_time','importance','status','tags',
-                  'category','category_id')
+        fields = ('id','author','author_id','title','content','created_time','last_modified_time','importance',
+                  'status','tags','views_count','likes_count','category','category_id')
 
 
     # 自定义错误信息

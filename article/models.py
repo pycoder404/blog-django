@@ -37,6 +37,8 @@ class Article(models.Model):
     last_modified_time = models.DateTimeField(auto_now=True)
     importance = models.IntegerField(default=1, null=False, blank=False)
     status = models.CharField(max_length=20, default='draft', null=False, blank=False)
+    views_count = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
     # 分类
     category = models.ForeignKey(
         Category,
@@ -59,3 +61,21 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Album(models.Model):
+    album_name = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100)
+
+class Track(models.Model):
+    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
+    order = models.IntegerField()
+    title = models.CharField(max_length=100)
+    duration = models.IntegerField()
+
+    class Meta:
+        unique_together = ['album', 'order']
+        ordering = ['order']
+
+    def __str__(self):
+        return '%d: %s' % (self.order, self.title)

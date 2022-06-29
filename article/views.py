@@ -3,10 +3,12 @@ from collections import OrderedDict
 import markdown
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from rest_framework import viewsets
+
 
 from django.shortcuts import HttpResponse
-from article.models import Article
-from article.serializers import ArticleSerializer
+from article.models import Article,Tag,Category
+from article.serializers import ArticleSerializer,TagSerializer,CategorySerializer
 # Create your views here.
 
 from utils.views import BaseListAPIView, BaseRetrieveAPIView, BaseCreateAPIView, BaseUpdateAPIView
@@ -17,6 +19,20 @@ logger = logging.getLogger('dev')
 def index(request):
     return HttpResponse('article index page')
 
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
 
 class ArticleList(BaseListAPIView):
     """
@@ -24,6 +40,7 @@ class ArticleList(BaseListAPIView):
     """
     model = Article
     serializer_class = ArticleSerializer
+    is_page = False
     def get_queryset_data(self):
         """
         从数据库获取数据，各个子类可以根据情况重写
@@ -57,9 +74,12 @@ class ArticleDetail(BaseRetrieveAPIView):
         serializer = self.get_serializer(instance)
         data = serializer.data
         # 编辑模式下，将原始内容返回
+
         if self.request.GET.get('isedit', None) == 'true':
             return Response(data)
 
+        instance.views_count += 1
+        instance.save(update_fields=['views_count'])
         # fixme 'markdown.extensions.codehilite',好像没用？
         md = markdown.Markdown(
             extensions=[
@@ -69,6 +89,7 @@ class ArticleDetail(BaseRetrieveAPIView):
         )
         data['content'] = md.convert(data['content'])
         data['toc'] = md.toc
+
         return Response(data)
 
 

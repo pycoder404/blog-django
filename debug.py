@@ -22,9 +22,10 @@ def main():
     :return:
     """
     from article.models import Article
-    # from article.serializers import ArticleSerializer
-    queryset = Article.objects.filter().prefetch_related('author').order_by(*('id',))
-    print(queryset)
+    from article.serializers import ArticleSerializer
+    print(repr(ArticleSerializer()))
+    # queryset = Article.objects.filter().prefetch_related('author').order_by(*('id',))
+    # print(queryset)
     # s = ArticleSerializer(queryset, many=True)
     # s.is_valid(raise_exception=True)
     # print(s.data)
