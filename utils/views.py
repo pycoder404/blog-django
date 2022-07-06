@@ -157,7 +157,7 @@ class BaseListAPIView(mixins.ListModelMixin,
     """
     Concrete view for listing a queryset.
     """
-    is_page = True # 默认需要分页,防止数据过大
+    is_page = False # 默认需要分页,防止数据过大
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

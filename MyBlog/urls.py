@@ -15,17 +15,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter,SimpleRouter
+from rest_framework.routers import DefaultRouter, SimpleRouter
+
 # from article.views import ArticleViewSet
 from article.views import TagViewSet
 from article.views import CategoryViewSet
-# from article.views import ArticleViewSet
+
 router = DefaultRouter()
-router.register(r'tag',TagViewSet,basename='tag')
-router.register(r'category',CategoryViewSet,basename='category')
+router.register(r'tag', TagViewSet, basename='tag')
+router.register(r'category', CategoryViewSet, basename='category')
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('article/', include('article.urls')),
+    path('user/login/', TokenObtainPairView.as_view(), name='login'),
+    path('user/login/refresh/', TokenRefreshView.as_view(), name='refresh'),
 ]
 urlpatterns += router.urls

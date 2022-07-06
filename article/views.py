@@ -1,16 +1,13 @@
 import logging
-from collections import OrderedDict
 import markdown
-from django.contrib.auth.models import User
+from django.shortcuts import HttpResponse
+
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
 
-
-from django.shortcuts import HttpResponse
 from article.models import Article,Tag,Category
 from article.serializers import ArticleSerializer,TagSerializer,CategorySerializer
-# Create your views here.
-
 from utils.views import BaseListAPIView, BaseRetrieveAPIView, BaseCreateAPIView, BaseUpdateAPIView
 
 logger = logging.getLogger('dev')
@@ -41,6 +38,7 @@ class ArticleList(BaseListAPIView):
     model = Article
     serializer_class = ArticleSerializer
     is_page = False
+    permission_classes = [IsAdminUser]
     def get_queryset_data(self):
         """
         从数据库获取数据，各个子类可以根据情况重写
@@ -68,6 +66,7 @@ class ArticleList(BaseListAPIView):
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
     serializer_class = ArticleSerializer
+    permission_classes = [AllowAny]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -96,6 +95,7 @@ class ArticleDetail(BaseRetrieveAPIView):
 class CreateArticle(BaseCreateAPIView):
     model = Article
     serializer_class = ArticleSerializer
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         print("begin to save-->")
@@ -106,3 +106,4 @@ class CreateArticle(BaseCreateAPIView):
 class UpdateArticle(BaseUpdateAPIView):
     model = Article
     serializer_class = ArticleSerializer
+    permission_classes = [IsAdminUser]

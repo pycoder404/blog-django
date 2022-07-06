@@ -168,6 +168,7 @@ CORS_ALLOW_HEADERS = (
     'Accept',
     'User-Agent',
     'X-CSRFToken',
+    'Content-Type',
     '*',
 )
 
@@ -261,4 +262,7 @@ LOGGING = {
 # rest framework settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'utils.pagination.UtilsPageNumberPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }

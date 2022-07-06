@@ -21,6 +21,7 @@ class UtilsExceptionMiddleware(MiddlewareMixin):
         :return: None or HttpResponse object
         """
         msg = traceback.print_exc(exception)
+        raise exception
         res = {
             "detail": '系统产生了无法预知的错误，请联系管理员',
             'error':msg,
