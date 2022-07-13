@@ -38,6 +38,10 @@ class ArticleList(BaseListAPIView):
     model = Article
     serializer_class = ArticleSerializer
     is_page = False
+    # 这里的权限管理分两个部分进行的，首先在authentication中进行用户的信息确认
+    # 然后再permission中对用户权限进行判断，
+    # 如果用户权限管理算的话，就分为三部分了
+    # authentication_classes = ()
     permission_classes = [IsAdminUser]
     def get_queryset_data(self):
         """

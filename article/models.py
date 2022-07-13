@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+from user.models import User
 
 class Tag(models.Model):
     """文章标签"""

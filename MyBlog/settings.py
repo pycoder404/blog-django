@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'article',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -112,6 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL='user.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -260,9 +262,20 @@ LOGGING = {
 }
 
 # rest framework settings
+# 鉴权只是鉴定是否登录，只不过这里的鉴权会对request添加 user属性，可以用来check permission
+# authentication 和check_permission是两个不同维度的
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'utils.pagination.UtilsPageNumberPagination',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
+}
+
+
+# rest_framework_simplejwt settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer','AccessToken'),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }

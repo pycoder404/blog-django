@@ -25,15 +25,10 @@ router = DefaultRouter()
 router.register(r'tag', TagViewSet, basename='tag')
 router.register(r'category', CategoryViewSet, basename='category')
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('article/', include('article.urls')),
-    path('user/login/', TokenObtainPairView.as_view(), name='login'),
-    path('user/login/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path('user/', include('user.urls')),
 ]
 urlpatterns += router.urls

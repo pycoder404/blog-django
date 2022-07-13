@@ -5,7 +5,8 @@ from rest_framework import serializers
 from article.models import Article
 from article.models import Tag
 from article.models import Category
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from user.models import User
 
 DATEFMT = settings.DATEFMT
 
