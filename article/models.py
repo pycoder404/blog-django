@@ -4,7 +4,7 @@ from user.models import User
 
 class Tag(models.Model):
     """文章标签"""
-    text = models.CharField(max_length=30)
+    text = models.CharField(max_length=30,unique=True)
 
     class Meta:
         ordering = ['-id']
@@ -15,7 +15,7 @@ class Tag(models.Model):
 
 class Category(models.Model):
     """文章分类"""
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100,unique=True)
     created = models.DateTimeField(default=timezone.now)
 
     class Meta:

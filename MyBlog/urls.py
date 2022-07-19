@@ -22,13 +22,13 @@ from article.views import TagViewSet
 from article.views import CategoryViewSet
 
 router = DefaultRouter()
-router.register(r'tag', TagViewSet, basename='tag')
-router.register(r'category', CategoryViewSet, basename='category')
+router.register(r'api/tag', TagViewSet, basename='tag')
+router.register(r'api/category', CategoryViewSet, basename='category')
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('article/', include('article.urls')),
-    path('user/', include('user.urls')),
+    path('api/admin/', admin.site.urls),
+    path('api/article/', include('article.urls')),
+    path('api/user/', include('user.urls')),
 ]
 urlpatterns += router.urls
