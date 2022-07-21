@@ -38,6 +38,7 @@ class ArticleList(BaseListAPIView):
     model = Article
     serializer_class = ArticleSerializer
     is_page = False
+    query_param_keys = ['category','tags']
     # 这里的权限管理分两个部分进行的，首先在authentication中进行用户的信息确认
     # 然后再permission中对用户权限进行判断，
     # 如果用户权限管理算的话，就分为三部分了
@@ -66,6 +67,13 @@ class ArticleList(BaseListAPIView):
             )
         return queryset
 
+    def query_params_transform(self, query_params):
+        if 'category' in query_params.keys():
+            query_params['category__title'] = query_params.pop('category',None)
+
+        if 'tags' in query_params.keys():
+            query_params['tags__title'] = query_params.pop('tags',None)
+        return query_params
 
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
@@ -76,8 +84,8 @@ class ArticleDetail(BaseRetrieveAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
-        # 编辑模式下，将原始内容返回
 
+        # 编辑模式下，将原始内容返回
         if self.request.GET.get('isedit', None) == 'true':
             return Response(data)
 

@@ -122,6 +122,7 @@ class BaseGenericAPIView(GenericAPIView):
             if value:
                 key = item[:-2] if '[]' in item else item
                 query_params[key] = value
+        # todo 这里传递的其实是引用(指针),多个请求之间是否隔离
         _query_params = self.query_params_transform(query_params)
         logger.info("Query parameters is:{}".format(_query_params))
         return _query_params

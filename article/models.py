@@ -4,13 +4,13 @@ from user.models import User
 
 class Tag(models.Model):
     """文章标签"""
-    text = models.CharField(max_length=30,unique=True)
+    title = models.CharField(max_length=30,unique=True)
 
     class Meta:
         ordering = ['-id']
 
     def __str__(self):
-        return self.text
+        return self.title
 
 
 class Category(models.Model):
@@ -61,21 +61,3 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class Album(models.Model):
-    album_name = models.CharField(max_length=100)
-    artist = models.CharField(max_length=100)
-
-class Track(models.Model):
-    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
-    order = models.IntegerField()
-    title = models.CharField(max_length=100)
-    duration = models.IntegerField()
-
-    class Meta:
-        unique_together = ['album', 'order']
-        ordering = ['order']
-
-    def __str__(self):
-        return '%d: %s' % (self.order, self.title)

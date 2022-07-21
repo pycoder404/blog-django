@@ -21,9 +21,9 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
     """标签序列化器"""
 
     def check_tag_obj_exists(self, validated_data):
-        text = validated_data.get('text')
-        if Tag.objects.filter(text=text).exists():
-            raise serializers.ValidationError('Tag with text {} exists.'.format(text))
+        title = validated_data.get('title')
+        if Tag.objects.filter(title=title).exists():
+            raise serializers.ValidationError('Tag with title {} exists.'.format(title))
 
     def create(self, validated_data):
         self.check_tag_obj_exists(validated_data)
@@ -85,16 +85,16 @@ class ArticleSerializer(serializers.ModelSerializer):
     last_modified_time = serializers.DateTimeField(format=DATEFMT,read_only=True)
 
     # category 的嵌套序列化字段
-    category =  serializers.PrimaryKeyRelatedField(read_only=True)
+    # category =  serializers.PrimaryKeyRelatedField(read_only=True)
     views_count =  serializers.IntegerField(read_only=True)
     likes_count =  serializers.IntegerField(read_only=True)
 
     # todo  如果使用SlugrelatedField，则反馈的是title字段（更合理），前端需要适配
-    # category = serializers.SlugRelatedField(
-    #     required=False,
-    #     slug_field='title',
-    #     read_only=True
-    # )
+    category = serializers.SlugRelatedField(
+        required=False,
+        slug_field='title',
+        read_only=True
+    )
     # category 的 id 字段，用于创建/更新 category 外键
     category_id = serializers.IntegerField(write_only=True, allow_null=True, required=False)
     # tag 字段
@@ -102,7 +102,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
         required=False,
-        slug_field='text'
+        slug_field='title'
     )
     class Meta:
         model = Article
@@ -136,13 +136,21 @@ class ArticleSerializer(serializers.ModelSerializer):
         )
         return value
 
+    @staticmethod
+    def get_category_id(category_title):
+        if not category_title:
+            return None
+        _category= Category.objects.filter(title=category_title).values('id')
+        return _category[0]['id'] if _category else None
+
     # 覆写方法，如果输入的标签不存在则创建它
+    # 并将category从title转换为id
     def to_internal_value(self, data):
-        tags_data = data.get('tags')
-        if isinstance(tags_data, list):
-            for text in tags_data:
-                if not Tag.objects.filter(text=text).exists():
-                    Tag.objects.create(text=text)
-        data['category_id'] = data.get('category',None)
+        # tags_data = data.get('tags')
+        # if isinstance(tags_data, list):
+        #     for title in tags_data:
+        #         if not Tag.objects.filter(title=title).exists():
+        #             Tag.objects.create(title=title)
+        data['category_id'] = self.get_category_id(data.get('category',None))
         return super().to_internal_value(data)
 
