@@ -15,6 +15,16 @@ from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+MEDIA_ROOT = '/var/www/html/media/'
+# WORKSTATION = os.path.dirname(BASE_DIR)
+# MEDIA_ROOT = os.path.join(WORKSTATION,'data/media/')
+# MEDIA_URL = '/media/'
+#
+# #STATIC_ROOT = os.path.join(BASE_DIR, 'collectedstatic')
+# STATIC_ROOT = os.path.join(WORKSTATION,'data/static/')
+# STATIC_URL = '/static/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/

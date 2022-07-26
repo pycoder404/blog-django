@@ -1,13 +1,21 @@
+import json
+import os
+import datetime
 import logging
 import markdown
-from django.shortcuts import HttpResponse
+
+from django.views import generic
+from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from rest_framework.response import Response
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 
-from article.models import Article,Tag,Category
-from article.serializers import ArticleSerializer,TagSerializer,CategorySerializer
+from article.models import Article, Tag, Category
+from article.serializers import ArticleSerializer, TagSerializer, CategorySerializer
 from utils.views import BaseListAPIView, BaseRetrieveAPIView, BaseCreateAPIView, BaseUpdateAPIView
 
 logger = logging.getLogger('dev')
@@ -16,9 +24,11 @@ logger = logging.getLogger('dev')
 def index(request):
     return HttpResponse('article index page')
 
+
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -30,7 +40,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
 
-
 class ArticleList(BaseListAPIView):
     """
     Concrete view for listing a queryset.
@@ -38,12 +47,13 @@ class ArticleList(BaseListAPIView):
     model = Article
     serializer_class = ArticleSerializer
     is_page = False
-    query_param_keys = ['category','tags']
+    query_param_keys = ['category', 'tags']
     # 这里的权限管理分两个部分进行的，首先在authentication中进行用户的信息确认
     # 然后再permission中对用户权限进行判断，
     # 如果用户权限管理算的话，就分为三部分了
     # authentication_classes = ()
     permission_classes = [IsAdminUser]
+
     def get_queryset_data(self):
         """
         从数据库获取数据，各个子类可以根据情况重写
@@ -69,11 +79,12 @@ class ArticleList(BaseListAPIView):
 
     def query_params_transform(self, query_params):
         if 'category' in query_params.keys():
-            query_params['category__title'] = query_params.pop('category',None)
+            query_params['category__title'] = query_params.pop('category', None)
 
         if 'tags' in query_params.keys():
-            query_params['tags__title'] = query_params.pop('tags',None)
+            query_params['tags__title'] = query_params.pop('tags', None)
         return query_params
+
 
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
@@ -119,3 +130,61 @@ class UpdateArticle(BaseUpdateAPIView):
     model = Article
     serializer_class = ArticleSerializer
     permission_classes = [IsAdminUser]
+
+
+class UploadView(generic.View):
+    """ upload image file """
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(UploadView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        upload_file = request.FILES.get("upload_file", None)
+        media_root = settings.MEDIA_ROOT
+        # image none check
+        if not upload_file:
+            return HttpResponse({'data': json.dumps({
+                'code': 1,
+                'message': "未检测到上传的文件信息",
+                'url': ""
+            })})
+
+        # file format check
+        file_name_list = upload_file.name.split('.')
+        file_extension = file_name_list.pop(-1)
+        file_name = '.'.join(file_name_list)
+        # fixme  check file size
+        # if file_extension not in MDEDITOR_CONFIGS['upload_image_formats']:
+        #     return HttpResponse(json.dumps({
+        #         'success': 0,
+        #         'message': "上传图片格式错误，允许上传图片格式为：%s" % ','.join(
+        #             MDEDITOR_CONFIGS['upload_image_formats']),
+        #         'url': ""
+        #     }))
+
+        # image floder check
+        file_path = os.path.join(media_root, 'img')
+        if not os.path.exists(file_path):
+            try:
+                os.makedirs(file_path)
+            except Exception as err:
+                return HttpResponse(json.dumps({
+                    'code': 1,
+                    'message': "上传失败：%s" % str(err),
+                    'url': ""
+                }))
+
+        # save image
+        print("file_path is:{}".format(file_path))
+        file_full_name = '%s_%s.%s' % (file_name, '{0:%Y%m%d%H%M%S%f}'.format(datetime.datetime.now()),
+                                       file_extension)
+        with open(os.path.join(file_path, file_full_name), 'wb+') as file:
+            for chunk in upload_file.chunks():
+                file.write(chunk)
+
+        # todo 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
+        return HttpResponse(json.dumps({'data': {'code': 0, 'message': "上传成功！",
+                                                 'url': 'http://10.89.228.206:8000/media/img/{}'.format(
+                                                     file_full_name)}})
+                            )
