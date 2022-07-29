@@ -17,14 +17,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-MEDIA_ROOT = '/var/www/html/media/'
-# WORKSTATION = os.path.dirname(BASE_DIR)
-# MEDIA_ROOT = os.path.join(WORKSTATION,'data/media/')
-# MEDIA_URL = '/media/'
+#WORKSTATION = os.path.dirname(BASE_DIR)
+#MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+#MEDIA_URL = '/media/'
 #
-# #STATIC_ROOT = os.path.join(BASE_DIR, 'collectedstatic')
-# STATIC_ROOT = os.path.join(WORKSTATION,'data/static/')
-# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+STATIC_URL = '/static/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -35,7 +33,7 @@ SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*",'http://10.89.228.206:28080']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -98,7 +96,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bd',
-        'USER': 'root',
+        'USER': 'websql',
         'PASSWORD': 'pymysql',
         'HOST': '127.0.0.1',
         'PORT': 3306
@@ -145,6 +143,7 @@ DATETIMEFMT = '%Y-%m-%d %H:%M:%S'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+# todo set development and production mode
 STATIC_URL = '/static/'
 
 
@@ -185,7 +184,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 # log settings
-LOGS_DIR = '/home/workstation/bd/tmp/log/'
+LOGS_DIR = '/var/log/bd/'
 os.system('mkdir -p {}'.format(LOGS_DIR))
 # LOGGING = {
 #     'version': 1,
@@ -237,7 +236,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         },
         'log_file_time': {
-            'filename': os.path.join(LOGS_DIR, 'sec.log'),
+            'filename': os.path.join(LOGS_DIR, 'access.log'),
             'level': 'INFO',
             'formatter': 'verbose',
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -246,7 +245,7 @@ LOGGING = {
             'backupCount': 15
         },
         'log_file_size': {
-            'filename': os.path.join(LOGS_DIR, 'sec.log'),
+            'filename': os.path.join(LOGS_DIR, 'access.log'),
             'level': 'DEBUG',
             'formatter': 'verbose',
             'class': 'logging.handlers.RotatingFileHandler',
