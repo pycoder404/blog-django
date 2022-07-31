@@ -111,7 +111,8 @@ class ArticleDetail(BaseRetrieveAPIView):
         )
         data['content'] = md.convert(data['content'])
         data['toc'] = md.toc
-
+        print('content66666666666666666666666666666666666666666666666666')
+        print(md.toc)
         return Response(data)
 
 

@@ -12,16 +12,17 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from datetime import timedelta
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-#WORKSTATION = os.path.dirname(BASE_DIR)
-#MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
-#MEDIA_URL = '/media/'
+# WORKSTATION = os.path.dirname(BASE_DIR)
+# MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+# MEDIA_URL = '/media/'
 #
-STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 
 # Quick-start development settings - unsuitable for production
@@ -34,7 +35,6 @@ SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -84,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MyBlog.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -97,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bd',
         'USER': 'websql',
-        'PASSWORD': 'pymysql',
+        'PASSWORD': 'PyWebSql.0',
         'HOST': '127.0.0.1',
         'PORT': 3306
     },
@@ -121,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL='user.User'
+AUTH_USER_MODEL = 'user.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -139,13 +138,11 @@ USE_TZ = True
 DATEFMT = '%Y-%m-%d'
 DATETIMEFMT = '%Y-%m-%d %H:%M:%S'
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 # todo set development and production mode
 STATIC_URL = '/static/'
-
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -280,11 +277,10 @@ REST_FRAMEWORK = {
     )
 }
 
-
 # rest_framework_simplejwt settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'AUTH_HEADER_TYPES': ('Bearer','AccessToken'),
+    'AUTH_HEADER_TYPES': ('Bearer', 'AccessToken'),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
