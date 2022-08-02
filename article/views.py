@@ -111,8 +111,6 @@ class ArticleDetail(BaseRetrieveAPIView):
         )
         data['content'] = md.convert(data['content'])
         data['toc'] = md.toc
-        print('content66666666666666666666666666666666666666666666666666')
-        print(md.toc)
         return Response(data)
 
 
@@ -146,6 +144,7 @@ class UploadView(generic.View):
     def post(self, request, *args, **kwargs):
         upload_file = request.FILES.get("upload_file", None)
         media_root = settings.MEDIA_ROOT
+        media_url = settings.MEDIA_URL
         # image none check
         if not upload_file:
             return HttpResponse({'data': json.dumps({
@@ -189,5 +188,5 @@ class UploadView(generic.View):
 
         # todo 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
         return HttpResponse(json.dumps({'data': {'code': 0, 'message': "上传成功！",
-                                                 'url': '/media/img/{}'.format(file_full_name)}})
+                                                 'url': '{}/img/{}'.format(media_url,file_full_name)}})
                             )
