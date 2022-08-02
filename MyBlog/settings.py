@@ -19,8 +19,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # WORKSTATION = os.path.dirname(BASE_DIR)
-# MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
-# MEDIA_URL = '/media/'
+MEDIA_ROOT = '/var/www/html/media/'
+MEDIA_URL = '/media/'
 #
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
@@ -32,7 +32,7 @@ STATIC_URL = '/static/'
 SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True 
 
 ALLOWED_HOSTS = ['*']
 

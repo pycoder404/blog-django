@@ -55,4 +55,5 @@ ttystatus==0.38
 ubuntu-advantage-tools==27.2
 ufw==0.36
 urllib3==1.25.8
+uWSGI==2.0.20
 wrapt==1.13.3
