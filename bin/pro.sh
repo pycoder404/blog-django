@@ -12,14 +12,15 @@ cd ${BASE_DIR}
 # uwsgi --socket :8001 --module Secbackend.wsgi  --buffer-size 65536 --chmod-socket=666
 
 uwsgi --chdir=${BASE_DIR} \
-    --module=Myblog.wsgi:application \
-    --env DJANGO_SETTINGS_MODULE=Myblog.settings \
+    --module=MyBlog.wsgi:application \
+    --env DJANGO_SETTINGS_MODULE=MyBlog.settings \
     --master --pidfile=/var/run/uwsgi.pid \
     --socket=127.0.0.1:8001 \
     --processes=5 \
-    --uid=1000 --gid=2000 \
     --harakiri=20 \
+    --buffer-size 65536 \
     --max-requests=5000 \
     --vacuum \
     --daemonize=/var/log/uwsgi/django_8001.log
 #     --home=/path/to/virtual/env \   # optional path to a virtual environment
+#    --uid=1000 --gid=2000 \
