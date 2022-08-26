@@ -20,7 +20,7 @@ SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 MEDIA_URL_DEBUG = 'http://10.89.228.206:8008/media/'
 MEDIA_ROOT = '/var/www/html/media/'
-MEDIA_URL = '/media/' if os.getenv('DJANGO_MEDIA', None) else MEDIA_URL_DEBUG
+MEDIA_URL = MEDIA_URL_DEBUG if os.getenv('DJANGO_MEDIA', None) else '/media/' 
 #
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
@@ -33,7 +33,7 @@ SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DJANGO_DEBUG', None) else False
-
+# print('DEBUG IS :{}'.format(DEBUG))
 ALLOWED_HOSTS = ['*']
 
 # Application definition

@@ -16,6 +16,7 @@ uwsgi --chdir=${BASE_DIR} \
     --env DJANGO_SETTINGS_MODULE=MyBlog.settings \
     --master --pidfile=/var/run/uwsgi.pid \
     --socket=127.0.0.1:8001 \
+    --buffer-size 65536 \
     --processes=5 \
     --harakiri=20 \
     --buffer-size 65536 \
