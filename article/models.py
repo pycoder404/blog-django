@@ -39,6 +39,7 @@ class Article(models.Model):
     status = models.CharField(max_length=20, default='draft', null=False, blank=False)
     views_count = models.IntegerField(default=0)
     likes_count = models.IntegerField(default=0)
+    comments_count = models.IntegerField(default=0)
     # 分类
     category = models.ForeignKey(
         Category,
