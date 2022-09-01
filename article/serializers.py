@@ -109,7 +109,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         # fields = '__all__'
         fields = ('id','author','author_id','title','content','created_time','last_modified_time','importance',
-                  'status','tags','views_count','likes_count','comments_count','category','category_id','comments')
+                  'status','tags','views_count','likes_count','comments_count','category','category_id')
 
 
     # 自定义错误信息

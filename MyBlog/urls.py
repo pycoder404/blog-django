@@ -28,7 +28,8 @@ router.register(r'api/category', CategoryViewSet, basename='category')
 
 urlpatterns = [
     path('api/admin/', admin.site.urls),
-    path('api/article/', include('article.urls')),
     path('api/user/', include('user.urls')),
+    path('api/article/', include('article.urls')),
+    path('api/comment/', include('comment.urls')),
 ]
 urlpatterns += router.urls

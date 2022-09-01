@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from comment.models import Comment
 
-DATEFMT = settings.DATEFMT
+DATEFMT = settings.DATETIMEFMT
 
 
 class ParentCommentSerializer(serializers.ModelSerializer):
