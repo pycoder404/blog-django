@@ -1,6 +1,6 @@
-
 import logging
 import markdown
+from collections import OrderedDict
 
 from django.views import generic
 from django.conf import settings
@@ -29,6 +29,29 @@ class CommentList(BaseListAPIView):
     default_ordering = ('id',)
     query_param_keys = ['article_id']
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # 默认需要分页,防止数据过大
+        if self.is_page:
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                data = serializer.data
+                # todo 放在前端还是后台？
+                md = markdown.Markdown(
+                    extensions=[
+                        'markdown.extensions.extra',
+                        'markdown.extensions.toc',
+                    ]
+                )
+                for index in range(0,len(data)):
+                    data[index]['content'] =  md.convert(data[index]['content'])
+
+                return self.get_paginated_response(serializer.data)
+        else:
+            # fixme
+            raise Exception
 
 
 class CommentDetail(BaseRetrieveAPIView):
