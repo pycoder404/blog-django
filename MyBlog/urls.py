@@ -16,7 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter, SimpleRouter
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 
+class GitHubLogin(SocialLoginView):
+    adapter_class = GitHubOAuth2Adapter
+    callback_url = 'http://10.89.228.206:28080/'
+    client_class = OAuth2Client
 # from article.views import ArticleViewSet
 from article.views import TagViewSet
 from article.views import CategoryViewSet
@@ -31,5 +38,9 @@ urlpatterns = [
     path('api/user/', include('user.urls')),
     path('api/article/', include('article.urls')),
     path('api/comment/', include('comment.urls')),
+    path('api/accounts/', include('allauth.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/github/', GitHubLogin.as_view(), name='github_login')
+
 ]
 urlpatterns += router.urls
