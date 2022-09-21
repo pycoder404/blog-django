@@ -5,6 +5,10 @@ from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
 from utils.views import BaseRetrieveAPIView
 from user.models import User
 from user.serializers import UserSerializer
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+
 
 # Create your views here.
 def index(request):
@@ -14,10 +18,10 @@ def index(request):
 class UserInfo(BaseRetrieveAPIView):
     model = User
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return User.objects.get(id=1)
+        return User.objects.get(pk=self.request.user.id)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -25,3 +29,8 @@ class UserInfo(BaseRetrieveAPIView):
         data = serializer.data
         data['roles'] = data['roles'].split(',')
         return Response(data)
+
+class GitHubLogin(SocialLoginView):
+    adapter_class = GitHubOAuth2Adapter
+    callback_url = 'http://10.89.228.206:28080/login/github'
+    client_class = OAuth2Client

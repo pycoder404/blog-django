@@ -13,6 +13,8 @@ urlpatterns = [
     path('info/', views.UserInfo.as_view(), name='info'),
     path('logout/', views.index, name='logout'),
     path('login/', TokenObtainPairView.as_view(), name='login'),
+    path('login/github/', views.GitHubLogin.as_view(), name='github_login'),
     path('login/refresh/', TokenRefreshView.as_view(), name='refresh'),
+
 ]
 
