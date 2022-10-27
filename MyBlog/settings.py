@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'article',
     'user',
-    'mptt',
     'comment',
     'django.contrib.sites',
     'allauth',
@@ -330,3 +329,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer', 'AccessToken'),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
+
+
+# TODO 将github的secret key放在环境变量里面导入，不需要django后台配置sites了
+
+SOCIALACCOUNT_ADAPTER = 'social_login.adapter.SocialAccountAdapter'
+SOCIALACCOUNT_EMAIL_VERIFICATION = False
