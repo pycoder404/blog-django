@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 
 from rest_framework.response import Response
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from utils.permissions import IsAdminUser, ReadOnly
 
 from article.models import Article, Tag, Category
 from article.serializers import ArticleSerializer, TagSerializer, CategorySerializer
@@ -31,11 +31,13 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
+    # fixme  filter tags by permission and article's status
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    # fixme  filter categories by permission and article's status
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -52,7 +54,7 @@ class ArticleList(BaseListAPIView):
     # note 然后再permission中对用户权限进行判断，
     # note 如果用户权限管理算的话，就分为三部分了
     # authentication_classes = ()
-    # permission_classes = [IsAdminUser]
+    permission_classes = [ReadOnly]
 
     def get_queryset_data(self):
         """
@@ -60,6 +62,8 @@ class ArticleList(BaseListAPIView):
         :return: queryset form db;
         """
         if self.model is not None:
+            # fixme  filter articles by permission and article's status
+
             query_params = self.get_query_params()
             # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/  prefetch_related
             # todo 这里两种方案的性能如何选择,如果使用当前这种不带prefetch的，那这个方法也没有必要重写，直接使用即可
@@ -89,7 +93,8 @@ class ArticleList(BaseListAPIView):
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
     serializer_class = ArticleSerializer
-    permission_classes = [AllowAny]
+    # fixme  check article is public or personal
+    permission_classes = [ReadOnly]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -102,7 +107,6 @@ class ArticleDetail(BaseRetrieveAPIView):
 
         instance.views_count += 1
         instance.save(update_fields=['views_count'])
-        # fixme 'markdown.extensions.codehilite',好像没用？
         md = markdown.Markdown(
             extensions=[
                 'markdown.extensions.extra',
@@ -120,18 +124,17 @@ class CreateArticle(BaseCreateAPIView):
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
-        print("begin to save-->")
-        # fixme  change to real author
-        serializer.save(author_id=1)
+        serializer.save(author_id=self.request.user.id)
 
 
 class UpdateArticle(BaseUpdateAPIView):
     model = Article
     serializer_class = ArticleSerializer
     permission_classes = [IsAdminUser]
+
     # fixme 代理中禁用put方法，所以这里直接用post，后续删除
     def post(self, request, *args, **kwargs):
-        return self.put(request,*args,**kwargs)
+        return self.put(request, *args, **kwargs)
 
 
 class UploadView(generic.View):
@@ -179,14 +182,13 @@ class UploadView(generic.View):
                 }))
 
         # save image
-        print("file_path is:{}".format(file_path))
         file_full_name = '%s_%s.%s' % (file_name, '{0:%Y%m%d%H%M%S%f}'.format(datetime.datetime.now()),
                                        file_extension)
         with open(os.path.join(file_path, file_full_name), 'wb+') as file:
             for chunk in upload_file.chunks():
                 file.write(chunk)
 
-        # todo 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
+        # note 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
         return HttpResponse(json.dumps({'data': {'code': 0, 'message': "上传成功！",
-                                                 'url': '{}/img/{}'.format(media_url,file_full_name)}})
+                                                 'url': '{}/img/{}'.format(media_url, file_full_name)}})
                             )

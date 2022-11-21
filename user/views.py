@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser,IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from utils.views import BaseRetrieveAPIView
 from user.models import User
@@ -14,11 +14,12 @@ from dj_rest_auth.registration.views import SocialLoginView
 def index(request):
     return HttpResponse("This is user index page")
 
+# todo  add logout and refresh views, and user lists
 
 class UserInfo(BaseRetrieveAPIView):
     model = User
     serializer_class = UserSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return User.objects.get(pk=self.request.user.id)

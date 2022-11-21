@@ -1,22 +1,16 @@
 import logging
 import markdown
-from collections import OrderedDict
-
-from django.views import generic
-from django.conf import settings
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.db.models import F
 
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from rest_framework import status
 
 from comment.models import Comment
 from comment.serializers import CommentSerializer
 from utils.views import BaseListAPIView, BaseRetrieveAPIView, BaseCreateAPIView, BaseUpdateAPIView
 
 logger = logging.getLogger('dev')
-
 
 
 class CommentList(BaseListAPIView):
@@ -38,15 +32,15 @@ class CommentList(BaseListAPIView):
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
                 data = serializer.data
-                # todo 放在前端还是后台？
                 md = markdown.Markdown(
                     extensions=[
                         'markdown.extensions.extra',
                         'markdown.extensions.toc',
                     ]
                 )
-                for index in range(0,len(data)):
-                    data[index]['content'] =  md.convert(data[index]['content'])
+                for index in range(0, len(data)):
+                    data[index]['mdcontent'] = md.convert(data[index]['content'])
+
 
                 return self.get_paginated_response(serializer.data)
         else:
@@ -70,7 +64,6 @@ class CommentDetail(BaseRetrieveAPIView):
 
         instance.views_count += 1
         instance.save(update_fields=['views_count'])
-        # fixme 'markdown.extensions.codehilite',好像没用？
         md = markdown.Markdown(
             extensions=[
                 'markdown.extensions.extra',
@@ -85,9 +78,44 @@ class CommentDetail(BaseRetrieveAPIView):
 class CommentCreate(BaseCreateAPIView):
     model = Comment
     serializer_class = CommentSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
+    # how to get replied to
     def perform_create(self, serializer):
-        print("begin to save-->")
-        # fixme  change to real author
-        serializer.save(author_id=1)
+        serializer.save(author_id=self.request.user.id)
+        replied_to = serializer.validated_data['replied_to']
+        article_id = serializer.validated_data['article_id']
+
+        if replied_to:
+            self.model.objects.filter(article_id=article_id, comment_order=replied_to).update(
+                replied_count=F('replied_count') + 1)
+        # if serializer.valid_data:
+        #     self.model.objects.get(article_id=article_id,comment_order=replied_to).update(replied_count=1)
+        # todo if replied_to , replied_to's replied_count += 1
+        # todo should be a mysql transaction(如果有多个评论可能存在死锁的问题)
+
+    def get_request_data(self, request):
+        logger.info("request data is:{}".format(request.data))
+        post_data = request.data
+        article_id = post_data['article_id']
+        if not article_id:
+            raise Exception
+
+        comment_order = self.model.objects.filter(article_id=article_id).count()
+        post_data['comment_order'] = comment_order + 1
+        return post_data
+
+    def create(self, request, *args, **kwargs):
+        logger.info('create, get serializer -->')
+        logger.info("request data is:{}".format(request.data))
+        data = self.get_request_data(request)
+        serializer = self.get_serializer(data=data)
+        logger.info('get serializer--> done')
+        logger.info('begin to call serializer is_valid function')
+        serializer.is_valid(raise_exception=True)
+        logger.info('serializer.errors:{}'.format(serializer.errors))
+        logger.info('before create-->')
+        self.perform_create(serializer)
+        # logs.info('creat done')
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

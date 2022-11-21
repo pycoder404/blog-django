@@ -1,7 +1,7 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.utils import user_field
 
-from logs import logs
+# from logs import logs
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -20,13 +20,12 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         free. For example, verifying whether or not the username
         already exists, is not a responsibility.
         """
-        logs.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         user = super().populate_user(request, sociallogin, data)
-        logs.info(" user id:{} and sociallogin.user:{}".format(id(user),id(sociallogin.user)))
+        # logs.info(" user id:{} and sociallogin.user:{}".format(id(user),id(sociallogin.user)))
 
         extra_data = sociallogin.account.extra_data
         source = sociallogin.account.provider
-        logs.info("extra_data is:{} and type is:{}".format(extra_data, type(extra_data)))
+        # logs.info("extra_data is:{} and type is:{}".format(extra_data, type(extra_data)))
         introduction = extra_data.get("bio")
         homepage = extra_data.get("html_url")
         avatar = extra_data.get('avatar_url')
@@ -34,8 +33,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         user_field(user, "homepage", homepage)
         user_field(user, "avatar", avatar)
         user_field(user, 'source', source)
-        logs.info("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
-        logs.info("user is:{} ".format(user))
-        logs.info(" user id:{} and sociallogin.user:{}".format(id(user),id(sociallogin.user)))
+        # logs.info("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
+        # logs.info("user is:{} ".format(user))
+        # logs.info(" user id:{} and sociallogin.user:{}".format(id(user),id(sociallogin.user)))
 
         return user

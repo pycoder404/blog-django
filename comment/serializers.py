@@ -7,27 +7,20 @@ from comment.models import Comment
 DATEFMT = settings.DATETIMEFMT
 
 
-class ParentCommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    created_time = serializers.DateTimeField(format=DATEFMT, read_only=True)
-    class Meta:
-        model = Comment
-        fields = ('id', 'author', 'content', 'created_time', 'comment_order')
-
 
 class CommentSerializer(serializers.ModelSerializer):
     article = serializers.SlugRelatedField(read_only=True, slug_field='title')
     author = serializers.SlugRelatedField(read_only=True, slug_field='username')
     created_time = serializers.DateTimeField(format=DATEFMT, read_only=True)
-    parent = ParentCommentSerializer(read_only=True)
-    parent_id = serializers.IntegerField(write_only=True,required=False)
+    # category 的 id 字段，用于创建/更新 category 外键
+    article_id = serializers.IntegerField(write_only=True, allow_null=True, required=False)
 
     class Meta:
         depth = 1
         model = Comment
         # fields = '__all__'
-        fields = ('id', 'article', 'article_id', 'author', 'author_id', 'content', 'created_time', 'parent',
-                  'parent_id', 'replied_count', 'liked_count', 'disabled', 'comment_order')
+        fields = ('id', 'article', 'article_id', 'author', 'author_id', 'content', 'created_time', 'replied_to',
+                  'replied_count', 'liked_count', 'disabled', 'comment_order')
 
     #
     # # 自定义错误信息

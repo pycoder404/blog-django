@@ -5,7 +5,7 @@ from user.models import User
 class Tag(models.Model):
     """文章标签"""
     title = models.CharField(max_length=30,unique=True)
-
+    # fixme add is_public?
     class Meta:
         ordering = ['-id']
 
@@ -17,6 +17,7 @@ class Category(models.Model):
     """文章分类"""
     title = models.CharField(max_length=100,unique=True)
     created = models.DateTimeField(default=timezone.now)
+    # fixme add is_public?
 
     class Meta:
         ordering = ['-created']
@@ -36,7 +37,7 @@ class Article(models.Model):
     created_time = models.DateTimeField(default=timezone.now)
     last_modified_time = models.DateTimeField(auto_now=True)
     importance = models.IntegerField(default=1, null=False, blank=False)
-    status = models.CharField(max_length=20, default='draft', null=False, blank=False)
+    status = models.CharField(max_length=20, default='public', null=False, blank=False)
     views_count = models.IntegerField(default=0)
     likes_count = models.IntegerField(default=0)
     comments_count = models.IntegerField(default=0)

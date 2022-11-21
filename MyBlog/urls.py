@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework.routers import DefaultRouter
 
 # from article.views import ArticleViewSet
 from article.views import TagViewSet
@@ -32,7 +32,6 @@ urlpatterns = [
     path('api/article/', include('article.urls')),
     path('api/comment/', include('comment.urls')),
     path('api/accounts/', include('allauth.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
 
 ]
 urlpatterns += router.urls
