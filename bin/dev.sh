@@ -2,6 +2,7 @@
 #  active the virtual python env
 set -ex
 export DJANGO_DEBUG=1
+export DJANGO_ENV='DEV'
 export DJANGO_MEDIA=1
 
 BIN_DIR=$(cd `dirname $0`; pwd)

@@ -19,7 +19,6 @@ class Comment(models.Model):
     disabled = models.IntegerField(default=0)
     created_time = models.DateTimeField(auto_now_add=True)
     replied_to = models.IntegerField(default=0)
-    # todo replied count and comment order ? how ???
     replied_count = models.IntegerField(default=0)
     liked_count = models.IntegerField(default=0)
     comment_order = models.IntegerField(default=1)

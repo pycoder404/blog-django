@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
@@ -33,5 +34,5 @@ class UserInfo(BaseRetrieveAPIView):
 
 class GitHubLogin(SocialLoginView):
     adapter_class = GitHubOAuth2Adapter
-    callback_url = 'http://10.89.228.206:28080/login/github'
+    callback_url = settings.CALLBACK_URL
     client_class = OAuth2Client

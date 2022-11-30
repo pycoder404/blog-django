@@ -11,6 +11,7 @@ db.sqlite3
 nohup.out
 .env.*
 
+
 # C extensions
 *.so
 .idea

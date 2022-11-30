@@ -18,9 +18,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-MEDIA_URL_DEBUG = 'http://10.89.228.206:8008/media/'
-MEDIA_ROOT = '/var/www/html/media/'
-MEDIA_URL = MEDIA_URL_DEBUG if os.getenv('DJANGO_MEDIA', None) else '/media/' 
 #
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
@@ -33,6 +30,15 @@ SECRET_KEY = 'uirmqkzkmssj6%y@n@_)6-zbzwt8vzqc8_(f+pz1+cf%r&dhj$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DJANGO_DEBUG', None) else False
+
+
+# 将一些dev和pro不同的配置提取到配置文件中，导入使用
+DJANGO_ENV =os.getenv('DJANGO_ENV', 'DEV')
+if DJANGO_ENV == 'PRO':
+    from .envpro import *
+else:
+    from .envdev import *
+
 # print('DEBUG IS :{}'.format(DEBUG))
 ALLOWED_HOSTS = ['*']
 
@@ -60,7 +66,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     # 'allauth.socialaccount.providers.weixin',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -158,13 +163,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
-
-
-
-
-
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -331,7 +329,9 @@ SIMPLE_JWT = {
 }
 
 
-# TODO 将github的secret key放在环境变量里面导入，不需要django后台配置sites了
-
 SOCIALACCOUNT_ADAPTER = 'social_login.adapter.SocialAccountAdapter'
 SOCIALACCOUNT_EMAIL_VERIFICATION = False
+
+SOCIALACCOUNT_PROVIDERS = {'github': {
+    'APP': {"client_id": "aa6d9aa35a3d63374015", "secret": "04e7aaa79797e5dde26ed275dfa365867e2d0496", "key": "",
+            "certificate_key": ""}}}
