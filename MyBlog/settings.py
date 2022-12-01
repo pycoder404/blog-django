@@ -151,18 +151,6 @@ REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'jwt-auth'
 
 SITE_ID = 1
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        'APP': {
-            'client_id': '123',
-            'secret': '456',
-            'key': ''
-        }
-    }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -331,7 +319,3 @@ SIMPLE_JWT = {
 
 SOCIALACCOUNT_ADAPTER = 'social_login.adapter.SocialAccountAdapter'
 SOCIALACCOUNT_EMAIL_VERIFICATION = False
-
-SOCIALACCOUNT_PROVIDERS = {'github': {
-    'APP': {"client_id": "aa6d9aa35a3d63374015", "secret": "04e7aaa79797e5dde26ed275dfa365867e2d0496", "key": "",
-            "certificate_key": ""}}}
