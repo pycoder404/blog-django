@@ -189,6 +189,7 @@ class UploadView(generic.View):
                 file.write(chunk)
 
         # note 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
+        # todo 开发模式下，media可能在另外的一个端口下
         return HttpResponse(json.dumps({'data': {'code': 0, 'message': "上传成功！",
                                                  'url': '{}/img/{}'.format(media_url, file_full_name)}})
                             )

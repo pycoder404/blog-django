@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 export DJANGO_DEBUG=
-export DJANGO_MEDIA=
-export DJANGO_ENV="PRO"
+export DJANGO_ENV="local"
 
 BIN_DIR=$(cd `dirname $0`; pwd)
 BASE_DIR=`dirname ${BIN_DIR}`

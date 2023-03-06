@@ -2,7 +2,7 @@
 #  active the virtual python env
 set -ex
 export DJANGO_DEBUG=1
-export DJANGO_ENV='dev'
+export DJANGO_ENV='staging'
 
 BIN_DIR=$(cd `dirname $0`; pwd)
 BASE_DIR=`dirname ${BIN_DIR}`

@@ -33,14 +33,20 @@ DEBUG = True if os.getenv('DJANGO_DEBUG', None) else False
 
 
 # 将一些dev和pro不同的配置提取到配置文件中，导入使用
-DJANGO_ENV =os.getenv('DJANGO_ENV', 'DEV')
-if DJANGO_ENV == 'PRO':
+DJANGO_ENV = os.getenv('DJANGO_ENV', None)
+if DJANGO_ENV == 'dev':
+    from .envdev import *
+elif DJANGO_ENV == 'local':
+    from .envlocal import *
+elif DJANGO_ENV == 'staging':
+    from .envstaging import *
+elif DJANGO_ENV == 'pro':
     from .envpro import *
 else:
-    from .envdev import *
+    raise Exception
 
-# print('DEBUG IS :{}'.format(DEBUG))
-ALLOWED_HOSTS = ['*']
+# !!!! move it into env configuration file. !!!!
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -104,20 +110,13 @@ WSGI_APPLICATION = 'MyBlog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bd',
-        'USER': 'websql',
-        'PASSWORD': 'PyWebSql.0',
-        'HOST': '127.0.0.1',
-        'PORT': 3306
-    },
-}
+# !!!! move it into env configuration file. !!!!
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     },
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -176,7 +175,10 @@ STATIC_URL = '/static/'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ('http://10.89.228.206:28080',)
+
+# !!!! move it into env configuration file. !!!!
+# CORS_ORIGIN_WHITELIST = ('http://10.89.228.206:28080',)
+
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',
@@ -213,6 +215,7 @@ CORS_ALLOW_HEADERS = (
 # log settings
 LOGS_DIR = '/var/log/bd/'
 os.system('mkdir -p {}'.format(LOGS_DIR))
+# 如下的log配置，可以看到ORM的运行细节
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,

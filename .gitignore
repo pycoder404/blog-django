@@ -9,7 +9,11 @@ db.sqlite3
 
 # 
 nohup.out
-.env.*
+MyBlog/envdev.py
+MyBlog/envlocal.py
+MyBlog/envstaging.py
+MyBlog/envpro.py
+
 
 
 # C extensions
