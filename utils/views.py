@@ -158,7 +158,8 @@ class BaseListAPIView(mixins.ListModelMixin,
     """
     Concrete view for listing a queryset.
     """
-    is_page = False # 默认需要分页,防止数据过大
+    #  默认需要分页,防止数据过大
+    is_paginated = True
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -168,7 +169,7 @@ class BaseListAPIView(mixins.ListModelMixin,
         queryset = self.filter_queryset(self.get_queryset())
 
         # 默认需要分页,防止数据过大
-        if self.is_page:
+        if self.is_paginated:
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)

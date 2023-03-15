@@ -48,7 +48,8 @@ class ArticleList(BaseListAPIView):
     """
     model = Article
     serializer_class = ArticleSerializer
-    is_page = False
+    # BaseListAPIView中默认分页
+    # is_paginated = False
     query_param_keys = ['category', 'tags']
     # note 这里的权限管理分两个部分进行的，首先在authentication中进行用户的信息确认
     # note 然后再permission中对用户权限进行判断，
@@ -62,8 +63,7 @@ class ArticleList(BaseListAPIView):
         :return: queryset form db;
         """
         if self.model is not None:
-            # fixme  filter articles by permission and article's status
-
+            # fixme filter articles by permission and article's status
             query_params = self.get_query_params()
             # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/  prefetch_related
             # todo 这里两种方案的性能如何选择,如果使用当前这种不带prefetch的，那这个方法也没有必要重写，直接使用即可
