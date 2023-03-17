@@ -19,15 +19,12 @@ class CommentList(BaseListAPIView):
     """
     model = Comment
     serializer_class = CommentSerializer
-    is_page = True
     default_ordering = ('id',)
     query_param_keys = ['article_id']
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
-        # 默认需要分页,防止数据过大
-        if self.is_page:
+        if self.is_paginated:
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
