@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'dj_rest_auth',
     'allauth.socialaccount.providers.github',
+    'django_filters',
     # 'allauth.socialaccount.providers.weixin',
 ]
 

@@ -16,6 +16,7 @@ from utils.permissions import IsAdminUser, ReadOnly
 
 from article.models import Article, Tag, Category
 from article.serializers import ArticleSerializer, TagSerializer, CategorySerializer
+from article.filters import IsAdminFitlerBackend
 from utils.views import BaseListAPIView, BaseRetrieveAPIView, BaseCreateAPIView, BaseUpdateAPIView
 
 logger = logging.getLogger('dev')
@@ -37,7 +38,6 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    # fixme  filter categories by permission and article's status
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -56,6 +56,7 @@ class ArticleList(BaseListAPIView):
     # note 如果用户权限管理算的话，就分为三部分了
     # authentication_classes = ()
     permission_classes = [ReadOnly]
+    filter_backends = [IsAdminFitlerBackend]
 
     def get_queryset_data(self):
         """
@@ -63,7 +64,6 @@ class ArticleList(BaseListAPIView):
         :return: queryset form db;
         """
         if self.model is not None:
-            # fixme filter articles by permission and article's status
             query_params = self.get_query_params()
             # todo 详细看下这里  https://www.django-rest-framework.org/api-guide/relations/  prefetch_related
             # todo 这里两种方案的性能如何选择,如果使用当前这种不带prefetch的，那这个方法也没有必要重写，直接使用即可
@@ -93,8 +93,8 @@ class ArticleList(BaseListAPIView):
 class ArticleDetail(BaseRetrieveAPIView):
     model = Article
     serializer_class = ArticleSerializer
-    # fixme  check article is public or personal
     permission_classes = [ReadOnly]
+    filter_backends = [IsAdminFitlerBackend]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -189,7 +189,7 @@ class UploadView(generic.View):
                 file.write(chunk)
 
         # note 后续这里反馈的是一个相对链接url即可，前端，后台，还有media，static全部放在nginx后面，使用不同的url匹配转发即可
-        # todo 开发模式下，media可能在另外的一个端口下
+        # note 开发模式下，media可能在另外的一个端口下,
         return HttpResponse(json.dumps({'data': {'code': 0, 'message': "上传成功！",
                                                  'url': '{}/img/{}'.format(media_url, file_full_name)}})
                             )

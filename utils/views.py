@@ -1,16 +1,11 @@
 import logging
 from collections import OrderedDict
-from django.http import HttpResponse
 from django.core.cache import cache
 from rest_framework.generics import GenericAPIView
-from rest_framework.generics import get_object_or_404
 from rest_framework import mixins
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
-from rest_framework import exceptions, status
 
 
-from utils.exceptions import BasicException
 
 logger = logging.getLogger('prod.utils')
 
@@ -43,21 +38,21 @@ class BaseGenericAPIView(GenericAPIView):
         """
         if self.is_cache:
             cache_key = self.get_cache_key()
-            queryset = self.get_queryset_from_cache(cache_key)
+            queryset = self.get_queryset_data_from_cache(cache_key)
         else:
             queryset = self.get_queryset_data()
         return queryset
 
     def get_cache_key(self):
         """
-        如果配置了缓存is_cache，则子类建议重写该方法,返回cache key值
+        如果配置了缓存is_cache，则子类重写该方法,返回cache key值
         特别有些和用户相关的请求,需要慎重配置cache key
         """
         # 子类建议重写该方法,返回cache key值
         raise NotImplementedError('You must redefine get_queryset_cache_key or set is_cache=False')
         # return self.request.get_full_path()
 
-    def get_queryset_from_cache(self, cache_key=None):
+    def get_queryset_data_from_cache(self, cache_key=None):
         """
         返回缓存数据,或者从数据库获取数据并更新cache
         :param cache_key: 缓存key
